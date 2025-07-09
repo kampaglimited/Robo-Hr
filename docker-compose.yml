@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://robohr:secret@db:5432/robohr
+      - AI_API_URL=http://ai:8000
+      - JWT_SECRET=your-super-secret-key
+    depends_on:
+      - db
+      - ai
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+  ai:
+    build: ./ai
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ai:/app
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: robohr
+      POSTGRES_USER: robohr
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./backend/db:/docker-entrypoint-initdb.d
+
+volumes:
+  db_data:
