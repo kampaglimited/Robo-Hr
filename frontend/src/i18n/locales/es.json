@@ -1,0 +1,20 @@
+{
+  "Dashboard": "Panel de Control",
+  "Employees": "Empleados",
+  "Attendance": "Asistencia",
+  "Payroll": "Nómina",
+  "Recruitment": "Reclutamiento",
+  "Performance": "Rendimiento",
+  "AI Command Center": "Centro de Comandos IA",
+  "Analytics": "Analíticas",
+  "Settings": "Configuración",
+  "Sign out": "Cerrar sesión",
+  "Search": "Buscar",
+  "Good morning": "Buenos días",
+  "Good afternoon": "Buenas tardes",
+  "Good evening": "Buenas noches",
+  "Welcome to your ROBOHR dashboard": "Bienvenido a tu panel de ROBOHR",
+  "Sign in": "Iniciar sesión",
+  "Username": "Usuario",
+  "Password": "Contraseña"
+}

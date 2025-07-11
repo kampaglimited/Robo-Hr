@@ -37,7 +37,14 @@ interface AICapabilities {
 
 const CommandCenter: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { user } = useAuth();
+  interface AuthUser {
+    employee_id: string;
+    [key: string]: any;
+  }
+  const auth = useAuth();
+  const user: AuthUser | undefined = auth && typeof auth === 'object' && auth !== null && 'user' in auth
+    ? (auth.user as AuthUser)
+    : undefined;
   
   // State
   const [messages, setMessages] = useState<CommandMessage[]>([]);
@@ -107,7 +114,7 @@ const CommandCenter: React.FC = () => {
   const fetchCapabilities = async () => {
     try {
       const response = await aiAPI.getCapabilities();
-      setCapabilities(response);
+      setCapabilities(response.data);
     } catch (error) {
       console.error('Failed to fetch AI capabilities:', error);
     }
@@ -190,7 +197,7 @@ const CommandCenter: React.FC = () => {
       const response = await commandAPI.processText({
         text,
         lang: selectedLanguage,
-        employee_id: user?.employee_id,
+        employee_id: user?.employee_id ? Number(user.employee_id) : undefined,
       });
 
       const assistantMessage: CommandMessage = {

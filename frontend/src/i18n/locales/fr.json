@@ -1,0 +1,20 @@
+{
+  "Dashboard": "Tableau de Bord",
+  "Employees": "Employés",
+  "Attendance": "Présence",
+  "Payroll": "Paie",
+  "Recruitment": "Recrutement",
+  "Performance": "Performance",
+  "AI Command Center": "Centre de Commandes IA",
+  "Analytics": "Analyses",
+  "Settings": "Paramètres",
+  "Sign out": "Se déconnecter",
+  "Search": "Rechercher",
+  "Good morning": "Bonjour",
+  "Good afternoon": "Bon après-midi",
+  "Good evening": "Bonsoir",
+  "Welcome to your ROBOHR dashboard": "Bienvenue sur votre tableau de bord ROBOHR",
+  "Sign in": "Se connecter",
+  "Username": "Nom d'utilisateur",
+  "Password": "Mot de passe"
+}

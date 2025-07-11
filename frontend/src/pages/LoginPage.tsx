@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 const LoginPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { login } = useAuth();
+  const { login } = useAuth() as { login: (username: string, password: string) => Promise<void> };
   
   const [formData, setFormData] = useState({
     username: '',

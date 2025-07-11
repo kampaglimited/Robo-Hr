@@ -7,7 +7,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { useAuth } from './hooks/useAuth';
 
 // Layout components
-import Layout from './components/Layout/Layout';
+import Layout from './components/Layout/layout';
 import LoginPage from './pages/LoginPage';
 
 // Main pages
@@ -27,6 +27,8 @@ import NotFound from './pages/NotFound';
 // Styles
 import './App.css';
 import './i18n';
+
+
 
 // Create a client
 const queryClient = new QueryClient({

@@ -25,9 +25,18 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+interface AuthContextType {
+  user: {
+    employee_name?: string;
+    username?: string;
+    role?: string;
+  } | null;
+  logout: () => void;
+}
+
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { t, i18n } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, logout } = useAuth() as AuthContextType;
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -220,7 +229,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       {user?.employee_name || user?.username}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                      {user?.role}
+                      {user?.role || ''}
                     </p>
                   </div>
                 </button>
@@ -233,7 +242,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         {user?.employee_name || user?.username}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                        {user?.role}
+                        {user?.role || ''}
                       </p>
                     </div>
                     <Link

@@ -34,7 +34,7 @@ interface QuickAction {
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user } = useAuth() as { user: any };
   const [loading, setLoading] = useState(false);
 
   // Fetch dashboard data
