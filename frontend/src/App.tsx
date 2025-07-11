@@ -1,90 +1,147 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Menu, Users, Clock, DollarSign, Briefcase, Target, BarChart3, Settings, Bot } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { useAuth } from './hooks/useAuth';
+
+// Layout components
+import Layout from './components/Layout/Layout';
+import LoginPage from './pages/LoginPage';
+
+// Main pages
 import Dashboard from './pages/Dashboard';
-import Employee from './pages/Employee';
+import Employees from './pages/Employees';
 import Attendance from './pages/Attendance';
 import Payroll from './pages/Payroll';
 import Recruitment from './pages/Recruitment';
 import Performance from './pages/Performance';
 import CommandCenter from './pages/CommandCenter';
 import Analytics from './pages/Analytics';
-import Admin from './pages/Admin';
+import Settings from './pages/Settings';
+
+// Error pages
+import NotFound from './pages/NotFound';
+
+// Styles
+import './App.css';
 import './i18n';
 
-function Navigation() {
-  const location = useLocation();
-  
-  const navItems = [
-    { path: '/', icon: BarChart3, label: 'Dashboard' },
-    { path: '/employee', icon: Users, label: 'Employees' },
-    { path: '/attendance', icon: Clock, label: 'Attendance' },
-    { path: '/payroll', icon: DollarSign, label: 'Payroll' },
-    { path: '/recruitment', icon: Briefcase, label: 'Recruitment' },
-    { path: '/performance', icon: Target, label: 'Performance' },
-    { path: '/command', icon: Bot, label: 'AI Center' },
-    { path: '/analytics', icon: BarChart3, label: 'Analytics' },
-    { path: '/admin', icon: Settings, label: 'Admin' },
-  ];
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
 
-  return (
-    <nav className="bg-blue-900 text-white w-64 min-h-screen p-4">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Bot className="w-8 h-8" />
-          ROBOHR
-        </h1>
-        <p className="text-blue-200 text-sm">AI-Powered HRMS</p>
+// Protected Route Component
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
-      
-      <ul className="space-y-2">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = location.pathname === item.path;
-          
-          return (
-            <li key={item.path}>
-              <Link
-                to={item.path}
-                className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                  isActive 
-                    ? 'bg-blue-700 text-white' 
-                    : 'text-blue-100 hover:bg-blue-800 hover:text-white'
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-                {item.label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
-  );
-}
+    );
+  }
+
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+};
+
+// Public Route Component (redirect if authenticated)
+const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  return !isAuthenticated ? <>{children}</> : <Navigate to="/dashboard" replace />;
+};
 
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
-        <div className="flex">
-          <Navigation />
-          <main className="flex-1 bg-gray-50 min-h-screen">
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/employee" element={<Employee />} />
-              <Route path="/attendance" element={<Attendance />} />
-              <Route path="/payroll" element={<Payroll />} />
-              <Route path="/recruitment" element={<Recruitment />} />
-              <Route path="/performance" element={<Performance />} />
-              <Route path="/command" element={<CommandCenter />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/admin" element={<Admin />} />
-            </Routes>
-          </main>
-        </div>
-      </BrowserRouter>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <AuthProvider>
+          <Router>
+            <div className="App">
+              <Routes>
+                {/* Public Routes */}
+                <Route 
+                  path="/login" 
+                  element={
+                    <PublicRoute>
+                      <LoginPage />
+                    </PublicRoute>
+                  } 
+                />
+
+                {/* Protected Routes */}
+                <Route
+                  path="/*"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Routes>
+                          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                          <Route path="/dashboard" element={<Dashboard />} />
+                          <Route path="/employees" element={<Employees />} />
+                          <Route path="/attendance" element={<Attendance />} />
+                          <Route path="/payroll" element={<Payroll />} />
+                          <Route path="/recruitment" element={<Recruitment />} />
+                          <Route path="/performance" element={<Performance />} />
+                          <Route path="/command-center" element={<CommandCenter />} />
+                          <Route path="/analytics" element={<Analytics />} />
+                          <Route path="/settings" element={<Settings />} />
+                          <Route path="*" element={<NotFound />} />
+                        </Routes>
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+
+              {/* Global Toast Notifications */}
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                  },
+                  success: {
+                    duration: 3000,
+                    iconTheme: {
+                      primary: '#10B981',
+                      secondary: '#fff',
+                    },
+                  },
+                  error: {
+                    duration: 5000,
+                    iconTheme: {
+                      primary: '#EF4444',
+                      secondary: '#fff',
+                    },
+                  },
+                }}
+              />
+            </div>
+          </Router>
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 
